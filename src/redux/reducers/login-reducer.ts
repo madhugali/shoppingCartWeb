@@ -5,11 +5,10 @@ import { ReduxAction, ReduxReducerObject } from '../../index';
 
 const initialState = {
     loginAccountDetails: {
-        isFetching: true,
+        isFetching: false,
         isSuccess: false,
         payload: {
-            validUser: false,
-            emailId: "",
+           
         }
     }
 };
@@ -21,20 +20,36 @@ class LoginReducer extends Reducer {
         console.log("State: ", state);
         console.log("payload: ", action.payload);
         return {
-            isSuccess: true,
+            isSuccess: false,
             isFetching: true,
-            payload: action.payload,
+            payload: {
+                validLogin: false,
+                token: "",
+            },
         }
     }
 
     static setLoggedInUserInfo(state: any, action: ReduxAction): ReduxReducerObject {
-        console.log("In setLoggedInUserInfo reducer ");
-        
-        return {
-            isSuccess: true,
-            isFetching: false,
-            payload: {...state.payload, userInfo: action.payload.response && {...action.payload.response}}
+        if(action.payload.token && action.payload.token.length > 0 ){
+            return {
+                isSuccess: true,
+                isFetching: false,
+                payload: {
+                    validLogin: true,
+                    token: action.payload.token,
+                }
+            }
         }
+        else{
+            return {
+                isSuccess: true,
+                isFetching: false,
+                payload: {
+                    validLogin: false,
+                    token: "",
+                }
+            }
+        }        
     }
 
     static logOut(state: any, action: any){

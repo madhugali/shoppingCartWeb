@@ -13,7 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useHistory } from "react-router-dom";
-import { useDispatch, } from "react-redux";
+import { useDispatch, useSelector, /*useStore*/ } from "react-redux";
 import {  withRouter } from "react-router";
 import {LoginActions} from '../../redux/actions/login-action';
 
@@ -52,6 +52,21 @@ const useStyles = makeStyles(theme => ({
 
 function SignIn() {
   const classes = useStyles();
+  let history = useHistory();
+  //const storeState = useStore().getState();
+  
+  const loginStoreData : any = useSelector((state:any) => state.loginReducer);
+ 
+  if(!loginStoreData.isFetching && loginStoreData.isSuccess){
+    if(loginStoreData.payload && loginStoreData.payload.validLogin && loginStoreData.payload.token){
+      console.log("Authorized user");
+      history.push("/signup");
+    }
+    else{
+      console.log("Unauthorized user!");
+    }
+  }
+
 
   //const count = useSelector(state => state.counter.count);
   const dispatch = useDispatch();
@@ -72,7 +87,7 @@ function SignIn() {
         dispatch(LoginActions.login(emailId, password));
     }    
   };
-  let history = useHistory();
+  
   const registerClick = (evt:any) =>{
     evt.preventDefault();
     history.push("/signup");

@@ -13,8 +13,7 @@ function logout() {
 }
 
 function login(emailId: string, password: string) {
-  return async (dispatch: Dispatch, getState: any) => {
-    console.log("In login action");
+  return async (dispatch: Dispatch, getState: any) => {    
     dispatch({
       type: ReduxAppConstants.GET_LOGGED_IN_USER_INFO,
       payload: {
@@ -28,12 +27,17 @@ function login(emailId: string, password: string) {
       .then(response => {
         dispatch({
           type: ReduxAppConstants.SET_LOGGED_IN_USER_INFO,
-          payload: response,
+          payload: response
         });
-        localStorage.setItem('user', JSON.stringify(response));
+        localStorage.setItem("user", JSON.stringify(response));
       })
       .catch(error => {
-        console.log("error in API response");
+        dispatch({
+          type: ReduxAppConstants.SET_LOGGED_IN_USER_INFO,
+          payload: {
+            validLogin: false
+          }
+        });
       });
   };
 }

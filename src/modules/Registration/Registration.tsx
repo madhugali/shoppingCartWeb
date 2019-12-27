@@ -9,8 +9,34 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import { withStyles } from "@material-ui/styles";
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+//import { withStyles } from "@material-ui/styles";
+//import { WithStyles, createStyles } from '@material-ui/core';
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { connect } from "react-redux";
+import { withRouter, RouteComponentProps } from "react-router";
+import { RegisterActions } from "../../redux/actions/registration-action";
+
+interface RegistrationInterface {
+  registerUser: Function;
+  preventDefault: Function;
+  registerClick: Function;
+  handleChange: Function;
+  handleSubmit: Function;
+  classes: any;
+
+  isFetching: boolean;
+  isSuccess: boolean;
+  data: any;
+}
+
+interface ResterationFormStateI {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  tc: string;
+  classes: any;
+}
 
 function Copyright() {
   return (
@@ -25,7 +51,7 @@ function Copyright() {
   );
 }
 
-const useStyles = theme => ({
+const useStyles = () => ({
   paper: {
     marginTop: "8px",
     display: "flex",
@@ -45,9 +71,11 @@ const useStyles = theme => ({
   }
 });
 
-class SignUp extends React.Component {
-
-  constructor(props) {
+class SignUp extends React.Component<
+  RegistrationInterface & RouteComponentProps & typeof useStyles,
+  any
+> {
+  constructor(props: any) {
     super(props);
     this.state = {
       formData: {
@@ -55,50 +83,51 @@ class SignUp extends React.Component {
         lastName: "",
         email: "",
         password: "",
-        tc: "",
+        tc: ""
       },
       submitted: false
     };
   }
-  
-  preventDefault = event => event.preventDefault();
 
-  registerClick = () =>{
-    this.preventDefault();
-    this.props.history.push("/signin");
+  componentDidUpdate() {
+    if (!this.props.isFetching && this.props.isSuccess) {
+      this.props.history.push("/signin");
+    }
   }
 
-  handleChange = event => {
+  preventDefault = (event: any) => event.preventDefault();
+
+  registerClick = () => {
+    this.preventDefault("");
+    this.props.history.push("/signin");
+  };
+
+  handleChange = (event: any) => {
     const { formData } = this.state;
     formData[event.target.name] = event.target.value;
     this.setState({ formData });
   };
 
-  handleSubmit = () => {
-    console.log(this.state);
-    this.setState({ submitted: true }, () => {
-      setTimeout(() => this.setState({ submitted: false }), 5000);
-    });
-  }
+  handleSubmit = (event: any) => {
+    event.preventDefault();
+    //TODO: uncomment this
+    //this.setState({ submitted: true });
+    this.props.registerUser(this.state.formData);
+  };
 
   render() {
-    const { classes } = this.props;
+    //const { classes} = useStyles;
     const { formData, submitted } = this.state;
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            {/**** <LockOutlinedIcon /> ******** */}
-          </Avatar>
+        <div>
+          <Avatar>{/**** <LockOutlinedIcon /> ******** */}</Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
 
-          <ValidatorForm
-            ref="form"
-            onSubmit={this.handleSubmit}
-            className={classes.form} >
+          <ValidatorForm ref="form" onSubmit={this.handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextValidator
@@ -112,8 +141,8 @@ class SignUp extends React.Component {
                   label="First Name"
                   autoFocus
                   onChange={this.handleChange}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
+                  validators={["required"]}
+                  errorMessages={["this field is required"]}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -127,8 +156,8 @@ class SignUp extends React.Component {
                   value={formData.lastName}
                   autoComplete="lname"
                   onChange={this.handleChange}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
+                  validators={["required"]}
+                  errorMessages={["this field is required"]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -142,8 +171,11 @@ class SignUp extends React.Component {
                   value={formData.email}
                   autoComplete="email"
                   onChange={this.handleChange}
-                  validators={['required', 'isEmail']}
-                  errorMessages={['this field is required', 'email is not valid']}
+                  validators={["required", "isEmail"]}
+                  errorMessages={[
+                    "this field is required",
+                    "email is not valid"
+                  ]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -158,8 +190,8 @@ class SignUp extends React.Component {
                   id="password"
                   autoComplete="current-password"
                   onChange={this.handleChange}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
+                  validators={["required"]}
+                  errorMessages={["this field is required"]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -168,7 +200,6 @@ class SignUp extends React.Component {
                     <Checkbox value="allowExtraEmails" color="primary" />
                   }
                   label="I will agree for terms and conditions"
-
                 />
               </Grid>
             </Grid>
@@ -178,13 +209,16 @@ class SignUp extends React.Component {
               fullWidth
               variant="contained"
               color="primary"
-              className={classes.submit}
             >
               Sign Up
             </Button>
             <Grid container justify="flex-end">
               <Grid item>
-                <Link href="/signin" variant="body2" onClick={this.registerClick} >
+                <Link
+                  href="/signin"
+                  variant="body2"
+                  onClick={this.registerClick}
+                >
                   Already have an account? Sign in
                 </Link>
               </Grid>
@@ -199,4 +233,17 @@ class SignUp extends React.Component {
   }
 }
 
-export default withStyles(useStyles)(SignUp);
+function mapStateToProps(state: any) {
+  const { isFetching, isSuccess, data } = state.registrationReducer;
+  return {
+    isFetching,
+    isSuccess,
+    data
+  };
+}
+
+const mapDispatchToProps = {
+  registerUser: RegisterActions.register
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(SignUp));

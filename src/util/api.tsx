@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {ServiceURLConstants} from '../constants/app-constants';
 
 var instance = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: `${ServiceURLConstants.APP_BASE_URL}`,
     headers: {
         'Content-Type': 'application/json;charset=UTF-8',
         'Access-Control-Allow-Origin': '*',
