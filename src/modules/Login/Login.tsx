@@ -53,6 +53,9 @@ const useStyles = makeStyles(theme => ({
 function SignIn() {
   const classes = useStyles();
   let history = useHistory();
+
+  // clear user details
+  localStorage.removeItem("user");
   //const storeState = useStore().getState();
   
   const loginStoreData : any = useSelector((state:any) => state.loginReducer);
@@ -60,7 +63,7 @@ function SignIn() {
   if(!loginStoreData.isFetching && loginStoreData.isSuccess){
     if(loginStoreData.payload && loginStoreData.payload.validLogin && loginStoreData.payload.token){
       console.log("Authorized user");
-      history.push("/signup");
+      history.push("/home");
     }
     else{
       console.log("Unauthorized user!");

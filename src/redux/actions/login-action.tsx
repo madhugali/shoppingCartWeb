@@ -22,7 +22,7 @@ function login(emailId: string, password: string) {
       }
     });
 
-    userService
+    await userService
       .login(emailId, password)
       .then(response => {
         dispatch({
