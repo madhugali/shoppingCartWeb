@@ -1,5 +1,6 @@
 import React from "react";
 import Menu from "./Menu";
+import ProductsInner from "./Products";
 import { withRouter, RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 
@@ -18,8 +19,8 @@ class Home extends React.Component<UserDetailsI & RouteComponentProps> {
       console.log("Authenticated user");
       console.log("User details: ", userDetails);
     } else {
-        console.log("token not found");
-        //this.props.history.push("/Login");
+      console.log("token not found");
+      //this.props.history.push("/Login");
     }
     /*
         if(!userDetails|| userDetails.token===''){
@@ -30,7 +31,13 @@ class Home extends React.Component<UserDetailsI & RouteComponentProps> {
   }
 
   render() {
-    return <Menu />;
+    return (
+      <React.Fragment>
+        <Menu />
+        <br/>
+        <ProductsInner />
+      </React.Fragment>
+    );
   }
 }
 
